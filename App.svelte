@@ -1,15 +1,19 @@
 <script>
-  let shown = true;
-  let moved = 0;
+ import { spring } from "svelte/motion";
 
-  const toggleShow = () => (shown = !shown);
-  const toggleMove = () => (moved = moved ? 0 : 500);
+ const fadeSpring = spring(1, { stiffness: 0.1, damping: 0.5 });
+ const transformSpring = spring(0, { stiffness: 0.9, damping: 0.7 });
+
+ const toggleFade = () => fadeSpring.update(val => (val ? 0 : 1));
+ const toggleTransform = () => transformSpring.update(val => (val ? 0 : 500));
+ const snapTransform = () => transformSpring.update(val => val, { hard: true });
 </script>
 
-<div style="opacity: {shown ? 1 : 0}">Content to toggle</div>
+<div style="opacity: {$fadeSpring}">Content to toggle</div>
 <br />
-<button on:click={toggleShow}>Toggle</button>
+<button on:click={toggleFade}>Toggle</button>
 <hr />
-<div class="box" style="transform: translateX({moved}px)">I'm a box.</div>
+<div class="box" style="transform: translateX({$transformSpring}px)">I'm a box.</div>
 <br />
-<button on:click={toggleMove}>Move it!</button>
+<button on:click={toggleTransform}>Move it!</button>
+<button on:click={snapTransform}>Snap into place</button>
